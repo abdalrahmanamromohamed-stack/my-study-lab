@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperStudy AI - Study Suite & Schedule</title>
+    <title>AthenaEum - Study & Exam Lab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,7 +11,10 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: { 500: '#00b4d8', 600: '#0096c7', 700: '#03045e' }
+                        darkBg: '#0b132b',
+                        cardBg: '#1c2541',
+                        accentBlue: '#00b4d8',
+                        accentGreen: '#10b981'
                     }
                 }
             }
@@ -19,304 +22,258 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-100 dark:bg-[#0b132b] text-slate-800 dark:text-slate-100 min-h-screen font-sans flex flex-col transition-colors duration-300 select-none">
+<body class="bg-[#0b132b] text-slate-100 min-h-screen font-sans flex flex-col antialiased">
 
-    <!-- HEADER / TOP NAVBAR -->
-    <header class="bg-white/90 dark:bg-[#1c2541]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 px-6 py-3 flex justify-between items-center shadow-sm">
-        
-        <!-- LOGO -->
-        <div class="flex items-center space-x-3 space-x-reverse">
-            <div class="bg-gradient-to-tr from-indigo-600 via-cyan-500 to-emerald-400 p-2.5 rounded-2xl text-white shadow-md shadow-cyan-500/20">
-                <i class="fa-solid fa-brain text-xl"></i>
-            </div>
-            <div>
-                <h1 class="font-black text-lg bg-gradient-to-r from-cyan-400 via-indigo-400 to-emerald-400 bg-clip-text text-transparent">SuperStudy AI</h1>
-                <p id="app-subtitle" class="text-[10px] text-slate-400 font-medium">مساعدك الأكاديمي الذكي والجدول الأسبوعي</p>
-            </div>
+    <!-- TOP HEADER / NAVBAR -->
+    <header class="bg-[#1c2541] border-b border-slate-800 px-6 py-3 flex justify-between items-center shadow-md">
+        <!-- APP TITLE -->
+        <div>
+            <h1 class="font-black text-lg text-cyan-400 tracking-wide flex items-center gap-2">
+                <i class="fa-solid fa-graduation-cap"></i> AthenaEum
+            </h1>
+            <p class="text-[10px] text-slate-400 font-medium">Study & Exam Lab for Secondary & Language Studies</p>
         </div>
 
-        <!-- CONTROLS & LANGUAGE SELECTOR -->
-        <div class="flex items-center space-x-2 space-x-reverse text-xs">
-            
-            <!-- LANGUAGE SELECTOR SWITCHER -->
-            <div class="relative flex items-center bg-slate-200 dark:bg-slate-800 rounded-xl px-2 py-1 border border-slate-300 dark:border-slate-700">
-                <i class="fa-solid fa-globe text-cyan-400 ml-1.5 mr-1"></i>
-                <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-transparent text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
-                    <option value="ar" class="dark:bg-slate-900 text-slate-800 dark:text-slate-200">العربية 🇦🇪</option>
-                    <option value="en" class="dark:bg-slate-900 text-slate-800 dark:text-slate-200">English 🇺🇸</option>
-                    <option value="zh" class="dark:bg-slate-900 text-slate-800 dark:text-slate-200">中文 🇨🇳</option>
-                    <option value="es" class="dark:bg-slate-900 text-slate-800 dark:text-slate-200">Español 🇪🇸</option>
-                </select>
-            </div>
-
-            <!-- DARK MODE TOGGLE -->
-            <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-amber-400 hover:opacity-80 transition" title="Theme Toggle">
-                <i class="fa-solid fa-sun dark:hidden"></i>
-                <i class="fa-solid fa-moon hidden dark:inline"></i>
+        <!-- WORKSPACE HEADER CONTROLS -->
+        <div class="flex items-center space-x-3 space-x-reverse text-xs">
+            <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition border border-slate-700">
+                <i class="fa-solid fa-rotate text-cyan-400"></i>
+                <span>تحديث الصفحة / Refresh</span>
             </button>
-
-            <!-- SOFT REFRESH -->
-            <button onclick="softRefresh()" class="flex items-center space-x-1 space-x-reverse px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">
-                <i class="fa-solid fa-rotate text-cyan-500"></i>
-                <span id="btn-refresh">تحديث</span>
+            <button onclick="clearWorkspace()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition border border-red-500/20">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>مسح الملفات</span>
+            </button>
+            <!-- AI TUTOR BUTTON (TOP RIGHT AS REQUESTED) -->
+            <button onclick="toggleAiModal()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold px-4 py-1.5 rounded-lg flex items-center gap-2 shadow-lg shadow-orange-500/20 transition">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>AI Tutor</span>
             </button>
         </div>
     </header>
 
-    <!-- MAIN APP LAYOUT -->
-    <div class="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 grid grid-cols-12 gap-6">
+    <!-- MAIN CONTAINER -->
+    <div class="flex-1 grid grid-cols-12 gap-0 overflow-hidden">
 
-        <!-- 1. SUBJECTS SIDEBAR & QUICK STICKY NOTES -->
-        <aside class="col-span-12 md:col-span-3 lg:col-span-2 space-y-4">
-            
-            <!-- SUBJECTS LIST -->
-            <div class="bg-white dark:bg-[#1c2541] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-                <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 mb-3">
-                    <span id="txt-subjects-title" class="text-xs font-bold text-slate-400 uppercase">المواد الأساسية</span>
-                    <i class="fa-solid fa-book-open text-xs text-cyan-500"></i>
-                </div>
-                <nav class="space-y-1.5 text-xs font-bold">
-                    <div class="p-2 bg-cyan-500/10 text-cyan-400 rounded-xl flex justify-between items-center">
-                        <span id="sub-arabic">اللغة العربية</span><i class="fa-solid fa-check text-[10px]"></i>
-                    </div>
-                    <div class="p-2 text-slate-400 rounded-xl flex justify-between items-center hover:bg-slate-800/40">
-                        <span id="sub-english">English / IELTS</span>
-                    </div>
-                    <div class="p-2 text-slate-400 rounded-xl flex justify-between items-center hover:bg-slate-800/40">
-                        <span id="sub-chem">الكيمياء</span>
-                    </div>
-                    <div class="p-2 text-slate-400 rounded-xl flex justify-between items-center hover:bg-slate-800/40">
-                        <span id="sub-phy">الفيزياء</span>
-                    </div>
-                    <div class="p-2 text-slate-400 rounded-xl flex justify-between items-center hover:bg-slate-800/40">
-                        <span id="sub-hist">التاريخ</span>
-                    </div>
-                    <div class="p-2 text-slate-400 rounded-xl flex justify-between items-center hover:bg-slate-800/40">
-                        <span id="sub-math">الرياضيات</span>
-                    </div>
+        <!-- 1. LEFT SIDEBAR (SUBJECTS NAVIGATION) -->
+        <aside class="col-span-12 md:col-span-2 bg-[#1c2541]/80 border-l border-slate-800 p-4 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">SUBJECTS</div>
+                <nav id="subjects-menu" class="space-y-1 text-xs font-semibold">
+                    <button onclick="switchWorkspace('arabic', 'Arabic Workspace')" class="subject-btn active w-full text-right px-3 py-2.5 rounded-xl text-cyan-400 bg-cyan-500/10 flex items-center justify-between transition">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-book text-cyan-400"></i> Arabic</span>
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    </button>
+                    <button onclick="switchWorkspace('english', 'English & Speech Lab')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-language text-indigo-400"></i> English / IELTS</span>
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    </button>
+                    <button onclick="switchWorkspace('chemistry', 'Chemistry Workspace')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-flask text-emerald-400"></i> Chemistry</span>
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    </button>
+                    <button onclick="switchWorkspace('physics', 'Physics Workspace')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-atom text-blue-400"></i> Physics</span>
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    </button>
+                    <button onclick="switchWorkspace('math', 'Math Workspace')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-amber-400"></i> Math</span>
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    </button>
+                    <button onclick="switchWorkspace('schedule', 'الجدول الأسبوعي والمهام')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-purple-400"></i> Schedule & Tasks</span>
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    </button>
                 </nav>
             </div>
 
-            <!-- STICKY NOTES / QUICK TO-DO HUB -->
-            <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-3 shadow-sm">
-                <h3 id="txt-notes-title" class="text-xs font-bold text-amber-400 flex items-center gap-2">
-                    <i class="fa-solid fa-note-sticky"></i> ملاحظات ومهام سريعة
-                </h3>
-                <textarea id="notes-input" placeholder="اكتب تذكير سريع هنا..." class="w-full bg-slate-900/60 border border-amber-500/20 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none resize-none h-24 focus:border-amber-400 transition"></textarea>
-            </div>
+            <button onclick="alert('قريباً: إضافة مواد مخصصة جديدة')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-xl text-xs font-bold border border-cyan-500/20 flex items-center justify-center gap-2 transition">
+                <i class="fa-solid fa-plus"></i> New Subject
+            </button>
         </aside>
 
-        <!-- 2. WEEKLY SCHEDULE TABLE & AI SUITE WORKSPACE -->
-        <main class="col-span-12 md:col-span-9 lg:col-span-10 space-y-4">
+        <!-- 2. CENTRAL DYNAMIC WORKSPACE AREA -->
+        <main class="col-span-12 md:col-span-10 p-6 overflow-y-auto space-y-6">
             
-            <!-- SCHEDULE HUB CARD -->
-            <div class="bg-white dark:bg-[#1c2541] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-                <div class="flex justify-between items-center">
-                    <h2 id="txt-schedule-title" class="text-sm font-bold text-slate-200 flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-days text-cyan-400"></i> الجدول الأسبوعي وتوقيت المهام
-                    </h2>
-                    <button id="btn-add-task" onclick="addCustomTask()" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> <span>إضافة مهمة للجدول</span>
-                    </button>
+            <!-- WORKSPACE HEADER TITLE -->
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 id="workspace-title" class="text-xl font-bold text-slate-100">Arabic Workspace</h2>
+                <span id="storage-status" class="text-xs text-slate-400">0 saved file(s) - storage synced</span>
+            </div>
+
+            <!-- DYNAMIC CONTENT CONTAINER -->
+            <div id="workspace-content" class="space-y-6">
+
+                <!-- DEFAULT VIEW: ARABIC / ACADEMIC SUBJECT WORKSPACE -->
+                <div class="grid grid-cols-12 gap-6">
+                    <!-- MATERIAL UPLOAD CARD -->
+                    <div class="col-span-12 lg:col-span-5 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Material</h3>
+                        <label class="border-2 border-dashed border-cyan-500/30 hover:border-cyan-500 bg-cyan-500/5 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-cyan-400 mb-2"></i>
+                            <span class="text-xs font-bold text-cyan-400">Upload PDF / Book</span>
+                            <input type="file" accept=".pdf" class="hidden" onchange="handleFileUpload(this)">
+                        </label>
+
+                        <!-- QUIZ SETUP -->
+                        <div class="space-y-3 pt-2">
+                            <h4 class="text-xs font-bold text-slate-300">Quiz Setup</h4>
+                            <div class="flex gap-2">
+                                <button class="flex-1 bg-cyan-600 text-white text-xs font-bold py-2 rounded-lg">Book Exercises Only</button>
+                                <button class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2 rounded-lg">AI Generated Quiz</button>
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-slate-400">QUESTIONS COUNT</label>
+                                <div class="flex gap-2 mt-1">
+                                    <button class="px-3 py-1 bg-slate-800 text-xs rounded-md text-slate-300">5</button>
+                                    <button class="px-3 py-1 bg-cyan-500 text-xs rounded-md font-bold text-white">10</button>
+                                    <button class="px-3 py-1 bg-slate-800 text-xs rounded-md text-slate-300">20</button>
+                                    <button class="px-3 py-1 bg-slate-800 text-xs rounded-md text-slate-300">ALL</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUIZ / VAULT VIEW -->
+                    <div class="col-span-12 lg:col-span-7 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 flex flex-col justify-center items-center text-center space-y-3 min-h-[300px]">
+                        <div class="p-4 bg-slate-800/50 rounded-full text-slate-500">
+                            <i class="fa-solid fa-file-pdf text-3xl"></i>
+                        </div>
+                        <p class="text-xs text-slate-400">Upload a PDF, choose your mode and build a quiz to start.</p>
+                    </div>
                 </div>
 
-                <!-- WEEKLY GRID TABLE -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-right border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-700/80 text-slate-400">
-                                <th id="th-time" class="p-2.5">التوقيت</th>
-                                <th id="th-sat" class="p-2.5">السبت</th>
-                                <th id="th-sun" class="p-2.5">الأحد</th>
-                                <th id="th-mon" class="p-2.5">الإثنين</th>
-                                <th id="th-tue" class="p-2.5">الثلاثاء</th>
-                                <th id="th-wed" class="p-2.5">الأربعاء</th>
-                                <th id="th-thu" class="p-2.5">الخميس</th>
-                                <th id="th-fri" class="p-2.5">الجمعة</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800/50">
-                            <tr>
-                                <td class="p-2.5 font-bold text-cyan-400 whitespace-nowrap">08:00 - 10:00 AM</td>
-                                <td class="p-2"><span id="task-sat-1" class="bg-slate-800 p-2 rounded-xl block">عربي (مراجعة)</span></td>
-                                <td class="p-2"><span id="task-sun-1" class="bg-slate-800 p-2 rounded-xl block">English IELTS</span></td>
-                                <td class="p-2"><span id="task-mon-1" class="bg-slate-800 p-2 rounded-xl block">كيمياء</span></td>
-                                <td class="p-2"><span id="task-tue-1" class="bg-slate-800 p-2 rounded-xl block">فيزياء</span></td>
-                                <td class="p-2"><span id="task-wed-1" class="bg-slate-800 p-2 rounded-xl block">تاريخ</span></td>
-                                <td class="p-2"><span id="task-thu-1" class="bg-slate-800 p-2 rounded-xl block">رياضيات</span></td>
-                                <td class="p-2"><span id="task-fri-1" class="bg-emerald-500/10 text-emerald-400 p-2 rounded-xl block">راحة أسبوعية</span></td>
-                            </tr>
-                            <tr>
-                                <td class="p-2.5 font-bold text-cyan-400 whitespace-nowrap">04:00 - 06:00 PM</td>
-                                <td class="p-2"><span class="bg-slate-800/50 border border-dashed border-slate-700 p-2 rounded-xl block text-slate-500">+ مهمة</span></td>
-                                <td class="p-2"><span id="task-sun-2" class="bg-slate-800 p-2 rounded-xl block">حل امتحانات</span></td>
-                                <td class="p-2"><span id="task-mon-2" class="bg-slate-800 p-2 rounded-xl block">حل تمارين</span></td>
-                                <td class="p-2"><span class="bg-slate-800/50 border border-dashed border-slate-700 p-2 rounded-xl block text-slate-500">+ مهمة</span></td>
-                                <td class="p-2"><span id="task-wed-2" class="bg-slate-800 p-2 rounded-xl block">مراجعة أخطاء</span></td>
-                                <td class="p-2"><span class="bg-slate-800/50 border border-dashed border-slate-700 p-2 rounded-xl block text-slate-500">+ مهمة</span></td>
-                                <td class="p-2"><span class="bg-slate-800/50 border border-dashed border-slate-700 p-2 rounded-xl block text-slate-500">+ مهمة</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </main>
     </div>
 
-    <!-- LANGUAGE DICTIONARY & INTERACTIVE SCRIPT -->
+    <!-- AI TUTOR MODAL (POP-UP WINDOW - CLEAN & UNCLUTTERED) -->
+    <div id="ai-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-[#1c2541] border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[550px]">
+            <div class="p-4 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                    <h3 class="font-bold text-sm text-slate-100">AI Tutor Assistant</h3>
+                </div>
+                <button onclick="toggleAiModal()" class="text-slate-400 hover:text-white font-bold text-lg">×</button>
+            </div>
+            <div id="ai-chat-body" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+                <div class="bg-cyan-500/10 border border-cyan-500/20 text-slate-200 p-3 rounded-xl max-w-[85%]">
+                    أهلاً بك! أنا معلمك الذكي الخاص بـ AthenaEum. اسألني في أي مادة، شرح نقطة معقدة، أو توليد أسئلة فورية!
+                </div>
+            </div>
+            <div class="p-3 border-t border-slate-700 bg-slate-900/50 flex gap-2">
+                <input type="text" id="ai-input" onkeypress="if(event.key==='Enter') sendAiMessage()" placeholder="اكتب سؤالك هنا..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                <button onclick="sendAiMessage()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition">إرسال</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT ARCHITECTURE -->
     <script>
-        const translations = {
-            ar: {
-                dir: "rtl",
-                subtitle: "مساعدك الأكاديمي الذكي والجدول الأسبوعي",
-                refresh: "تحديث",
-                subjectsTitle: "المواد الأساسية",
-                arabic: "اللغة العربية",
-                english: "English / IELTS",
-                chemistry: "الكيمياء",
-                physics: "الفيزياء",
-                history: "التاريخ",
-                math: "الرياضيات",
-                notesTitle: "ملاحظات ومهام سريعة",
-                notesPlaceholder: "اكتب تذكير سريع هنا...",
-                scheduleTitle: "الجدول الأسبوعي وتوقيت المهام",
-                addTask: "إضافة مهمة للجدول",
-                time: "التوقيت",
-                sat: "السبت", sun: "الأحد", mon: "الإثنين", tue: "الثلاثاء", wed: "الأربعاء", thu: "الخميس", fri: "الجمعة",
-                rest: "راحة أسبوعية",
-                rev: "عربي (مراجعة)",
-                exams: "حل امتحانات",
-                exercises: "حل تمارين",
-                mistakes: "مراجعة أخطاء"
-            },
-            en: {
-                dir: "ltr",
-                subtitle: "Smart Academic AI Assistant & Schedule",
-                refresh: "Refresh",
-                subjectsTitle: "Core Subjects",
-                arabic: "Arabic Language",
-                english: "English / IELTS",
-                chemistry: "Chemistry",
-                physics: "Physics",
-                history: "History",
-                math: "Mathematics",
-                notesTitle: "Quick Notes & To-Do",
-                notesPlaceholder: "Write a quick note here...",
-                scheduleTitle: "Weekly Schedule & Time Blocks",
-                addTask: "Add Task to Schedule",
-                time: "Time Block",
-                sat: "Saturday", sun: "Sunday", mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday",
-                rest: "Weekly Break",
-                rev: "Arabic (Revision)",
-                exams: "Solve Exams",
-                exercises: "Solve Exercises",
-                mistakes: "Review Mistakes"
-            },
-            zh: {
-                dir: "ltr",
-                subtitle: "智能学术 AI 助手与每周日程表",
-                refresh: "刷新",
-                subjectsTitle: "核心科目",
-                arabic: "阿拉伯语",
-                english: "英语 / 雅思",
-                chemistry: "化学",
-                physics: "物理",
-                history: "历史",
-                math: "数学",
-                notesTitle: "便签与快速任务",
-                notesPlaceholder: "在此处编写快速笔记...",
-                scheduleTitle: "每周日程与时间分配",
-                addTask: "添加任务到日程表",
-                time: "时间段",
-                sat: "星期六", sun: "星期日", mon: "星期一", tue: "星期二", wed: "星期三", thu: "星期四", fri: "星期五",
-                rest: "每周休息",
-                rev: "阿拉伯语 (复习)",
-                exams: "做模拟题",
-                exercises: "做练习题",
-                mistakes: "错题复习"
-            },
-            es: {
-                dir: "ltr",
-                subtitle: "Asistente Académico IA y Horario Semanal",
-                refresh: "Actualizar",
-                subjectsTitle: "Materias Principales",
-                arabic: "Idioma Árabe",
-                english: "Inglés / IELTS",
-                chemistry: "Química",
-                physics: "Física",
-                history: "Historia",
-                math: "Matemáticas",
-                notesTitle: "Notas Rápidas y Tareas",
-                notesPlaceholder: "Escribe una nota rápida aquí...",
-                scheduleTitle: "Horario Semanal y Bloques de Tiempo",
-                addTask: "Agregar Tarea al Horario",
-                time: "Horario",
-                sat: "Sábado", sun: "Domingo", mon: "Lunes", tue: "Martes", wed: "Miércoles", thu: "Jueves", fri: "Viernes",
-                rest: "Descanso Semanal",
-                rev: "Árabe (Repaso)",
-                exams: "Resolver Exámenes",
-                exercises: "Resolver Ejercicios",
-                mistakes: "Repasar Errores"
-            }
-        };
-
-        function changeLanguage(langKey) {
-            const lang = translations[langKey];
-            if (!lang) return;
-
-            // Update Page Direction (RTL for Arabic, LTR for others)
-            document.documentElement.setAttribute('dir', lang.dir);
-            document.documentElement.setAttribute('lang', langKey);
-
-            // Update Texts
-            document.getElementById('app-subtitle').innerText = lang.subtitle;
-            document.getElementById('btn-refresh').innerText = lang.refresh;
-            document.getElementById('txt-subjects-title').innerText = lang.subjectsTitle;
-
-            document.getElementById('sub-arabic').innerText = lang.arabic;
-            document.getElementById('sub-english').innerText = lang.english;
-            document.getElementById('sub-chem').innerText = lang.chemistry;
-            document.getElementById('sub-phy').innerText = lang.physics;
-            document.getElementById('sub-hist').innerText = lang.history;
-            document.getElementById('sub-math').innerText = lang.math;
-
-            document.getElementById('txt-notes-title').innerHTML = `<i class="fa-solid fa-note-sticky"></i> ${lang.notesTitle}`;
-            document.getElementById('notes-input').placeholder = lang.notesPlaceholder;
-
-            document.getElementById('txt-schedule-title').innerHTML = `<i class="fa-solid fa-calendar-days text-cyan-400"></i> ${lang.scheduleTitle}`;
-            document.getElementById('btn-add-task').querySelector('span').innerText = lang.addTask;
-
-            // Table Headers
-            document.getElementById('th-time').innerText = lang.time;
-            document.getElementById('th-sat').innerText = lang.sat;
-            document.getElementById('th-sun').innerText = lang.sun;
-            document.getElementById('th-mon').innerText = lang.mon;
-            document.getElementById('th-tue').innerText = lang.tue;
-            document.getElementById('th-wed').innerText = lang.wed;
-            document.getElementById('th-thu').innerText = lang.thu;
-            document.getElementById('th-fri').innerText = lang.fri;
-
-            // Default Tasks
-            document.getElementById('task-sat-1').innerText = lang.rev;
-            document.getElementById('task-sun-1').innerText = lang.english;
-            document.getElementById('task-mon-1').innerText = lang.chemistry;
-            document.getElementById('task-tue-1').innerText = lang.physics;
-            document.getElementById('task-wed-1').innerText = lang.history;
-            document.getElementById('task-thu-1').innerText = lang.math;
-            document.getElementById('task-fri-1').innerText = lang.rest;
-
-            document.getElementById('task-sun-2').innerText = lang.exams;
-            document.getElementById('task-mon-2').innerText = lang.exercises;
-            document.getElementById('task-wed-2').innerText = lang.mistakes;
+        function toggleAiModal() {
+            document.getElementById('ai-modal').classList.toggle('hidden');
         }
 
-        function toggleTheme() { document.documentElement.classList.toggle('dark'); }
-        function softRefresh() { alert('تم التحديث / Updated / 已刷新 / Actualizado!'); }
-        function addCustomTask() {
-            const task = prompt('أدخل تفاصيل المهمة والتوقيت:');
-            if(task) alert('تمت إضافة المهمة للجدول!');
+        function switchWorkspace(type, title) {
+            document.getElementById('workspace-title').innerText = title;
+            const content = document.getElementById('workspace-content');
+
+            // UPDATE ACTIVE BUTTON STYLES
+            document.querySelectorAll('.subject-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-cyan-400', 'bg-cyan-500/10');
+                btn.classList.add('text-slate-300');
+            });
+            event.currentTarget.classList.add('active', 'text-cyan-400', 'bg-cyan-500/10');
+
+            // RENDER WORKSPACE SPECIFIC CONTENT
+            if(type === 'english') {
+                content.innerHTML = `
+                    <div class="grid grid-cols-12 gap-6">
+                        <div class="col-span-12 lg:col-span-6 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
+                            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-microphone"></i> Universal Speech & Audio Lab
+                            </h3>
+                            <p class="text-xs text-slate-400">اختبر مهارات التحدث والنطق مع الذكاء الاصطناعي (IELTS Part 1-3, General Conversation, or Accent Training).</p>
+                            
+                            <div class="space-y-2">
+                                <label class="text-[11px] text-slate-300 font-bold">Select Training Mode:</label>
+                                <select class="w-full bg-slate-900 border border-slate-700 text-xs rounded-xl p-2.5 text-slate-200">
+                                    <option>IELTS Speaking Simulation (Part 1, 2, 3)</option>
+                                    <option>General Daily Conversation</option>
+                                    <option>Pronunciation & Accent Analysis</option>
+                                    <option>Listening & Dictation Practice</option>
+                                </select>
+                            </div>
+
+                            <button onclick="alert('جاري تشغيل الميكروفون للتحليل الصوتي...')" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition">
+                                <i class="fa-solid fa-circle-dot text-red-400 animate-pulse"></i> Start Audio Practice
+                            </button>
+                        </div>
+
+                        <div class="col-span-12 lg:col-span-6 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase">Flashcards & Spaced Repetition</h3>
+                            <div class="border border-slate-700 rounded-xl p-6 text-center space-y-2 bg-slate-900/40">
+                                <span class="text-xs text-cyan-400 font-mono">Vocabulary Item</span>
+                                <h4 class="text-lg font-bold text-white">Pragmatic</h4>
+                                <p class="text-xs text-slate-400">Dealing with things sensibly and realistically.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if(type === 'schedule') {
+                content.innerHTML = `
+                    <div class="bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
+                        <h3 class="text-xs font-bold text-purple-400 uppercase">الجدول الأسبوعي</h3>
+                        <p class="text-xs text-slate-400">جدول منظم ومستقل بدون أي دوشة.</p>
+                    </div>
+                `;
+            } else {
+                // DEFAULT SUBJECT VIEW
+                content.innerHTML = `
+                    <div class="grid grid-cols-12 gap-6">
+                        <div class="col-span-12 lg:col-span-5 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Material</h3>
+                            <label class="border-2 border-dashed border-cyan-500/30 hover:border-cyan-500 bg-cyan-500/5 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-cyan-400 mb-2"></i>
+                                <span class="text-xs font-bold text-cyan-400">Upload PDF / Book</span>
+                                <input type="file" accept=".pdf" class="hidden" onchange="handleFileUpload(this)">
+                            </label>
+                        </div>
+                        <div class="col-span-12 lg:col-span-7 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 flex flex-col justify-center items-center text-center space-y-3 min-h-[300px]">
+                            <i class="fa-solid fa-book-open text-3xl text-slate-600"></i>
+                            <p class="text-xs text-slate-400">مساحة عمل خاصة بـ ${title}</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function sendAiMessage() {
+            const input = document.getElementById("ai-input");
+            const text = input.value.trim();
+            if(!text) return;
+
+            const chatBody = document.getElementById("ai-chat-body");
+            chatBody.innerHTML += `<div class="bg-slate-800 text-slate-100 p-3 rounded-xl max-w-[80%] mr-auto">${text}</div>`;
+            input.value = "";
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            setTimeout(() => {
+                chatBody.innerHTML += `<div class="bg-amber-500/10 border border-amber-500/20 text-slate-200 p-3 rounded-xl max-w-[85%]"><b class="text-amber-400">AI Tutor:</b> إجابة ممتازة، تم تحليل سؤالك المتعلق بـ "${text}" بنجاح!</div>`;
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 600);
+        }
+
+        function handleFileUpload(input) {
+            if(input.files && input.files[0]) {
+                document.getElementById('storage-status').innerText = `1 saved file (${input.files[0].name}) - synced`;
+            }
+        }
+
+        function clearWorkspace() {
+            document.getElementById('storage-status').innerText = `0 saved file(s) - storage synced`;
         }
     </script>
 </body>
 </html>
-
