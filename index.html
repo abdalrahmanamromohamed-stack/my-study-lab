@@ -1,9 +1,11 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AthenaEum - Study & Exam Lab</title>
+    <title>AthenaEum - Study & Exam Dashboard</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -14,236 +16,468 @@
                         darkBg: '#0b132b',
                         cardBg: '#1c2541',
                         accentBlue: '#00b4d8',
-                        accentGreen: '#10b981'
+                        accentGreen: '#10b981',
+                        accentPurple: '#7209b7'
                     }
                 }
             }
         }
     </script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbars for clean UI */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b132b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1c2541;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00b4d8;
+        }
+    </style>
 </head>
-<body class="bg-[#0b132b] text-slate-100 min-h-screen font-sans flex flex-col antialiased">
+<body class="bg-[#0b132b] text-slate-100 h-screen font-sans flex flex-col overflow-hidden antialiased select-none">
 
-    <!-- TOP HEADER / NAVBAR -->
-    <header class="bg-[#1c2541] border-b border-slate-800 px-6 py-3 flex justify-between items-center shadow-md">
-        <!-- APP TITLE -->
-        <div>
-            <h1 class="font-black text-lg text-cyan-400 tracking-wide flex items-center gap-2">
-                <i class="fa-solid fa-graduation-cap"></i> AthenaEum
-            </h1>
-            <p class="text-[10px] text-slate-400 font-medium">Study & Exam Lab for Secondary & Language Studies</p>
+    <!-- ================= TOP TOOLBAR ================= -->
+    <header class="bg-[#1c2541] border-b border-slate-800 px-5 py-2.5 flex justify-between items-center shadow-lg shrink-0 z-20">
+        <!-- Brand & Title -->
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-cyan-500 to-blue-600 p-2 rounded-xl text-white shadow-md shadow-cyan-500/20">
+                <i class="fa-solid fa-graduation-cap text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-black text-base text-white tracking-wide flex items-center gap-2">
+                    AthenaEum <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full font-semibold border border-cyan-500/30">PRO LAB</span>
+                </h1>
+                <p class="text-[11px] text-slate-400 font-medium">منصة المذاكرة والاختبارات الذكية للثانوية واللغات</p>
+            </div>
         </div>
 
-        <!-- WORKSPACE HEADER CONTROLS -->
-        <div class="flex items-center space-x-3 space-x-reverse text-xs">
-            <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition border border-slate-700">
+        <!-- Global Fast Tools (Audio Lab & Quick Practice) -->
+        <div class="hidden lg:flex items-center gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-slate-800">
+            <button onclick="openLanguageLab('speaking')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-indigo-300 hover:bg-indigo-500/20 flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-microphone text-indigo-400"></i> Speaking Practice
+            </button>
+            <div class="w-[1px] h-4 bg-slate-800"></div>
+            <button onclick="openLanguageLab('listening')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-300 hover:bg-emerald-500/20 flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-headphones text-emerald-400"></i> Listening & Dictation
+            </button>
+        </div>
+
+        <!-- System Controls & AI Tutor Button -->
+        <div class="flex items-center gap-2">
+            <button onclick="location.reload()" title="تحديث الصفحة" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl text-xs flex items-center justify-center transition border border-slate-700">
                 <i class="fa-solid fa-rotate text-cyan-400"></i>
-                <span>تحديث الصفحة / Refresh</span>
             </button>
-            <button onclick="clearWorkspace()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition border border-red-500/20">
+            <button onclick="clearAllData()" title="مسح البيانات المخزنة" class="bg-slate-800 hover:bg-red-500/20 text-slate-300 hover:text-red-400 p-2 rounded-xl text-xs flex items-center justify-center transition border border-slate-700">
                 <i class="fa-solid fa-trash-can"></i>
-                <span>مسح الملفات</span>
             </button>
-            <!-- AI TUTOR BUTTON (TOP RIGHT) -->
-            <button onclick="toggleAiModal()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold px-4 py-1.5 rounded-lg flex items-center gap-2 shadow-lg shadow-orange-500/20 transition">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span>AI Tutor</span>
+            
+            <!-- AI TUTOR (TOP RIGHT ACTION) -->
+            <button onclick="toggleAiModal()" class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:opacity-95 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-orange-500/20 transition">
+                <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i>
+                <span>المساعد الذكي (AI Tutor)</span>
             </button>
         </div>
     </header>
 
-    <!-- MAIN CONTAINER -->
-    <div class="flex-1 grid grid-cols-12 gap-0 overflow-hidden">
+    <!-- ================= MAIN WORKSPACE (3 COLUMNS ARCHITECTURE) ================= -->
+    <div class="flex-1 grid grid-cols-12 overflow-hidden">
 
-        <!-- 1. LEFT SIDEBAR (SUBJECTS NAVIGATION) -->
-        <aside class="col-span-12 md:col-span-2 bg-[#1c2541]/80 border-l border-slate-800 p-4 flex flex-col justify-between">
-            <div class="space-y-4">
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2">SUBJECTS</div>
-                <nav id="subjects-menu" class="space-y-1 text-xs font-semibold">
-                    <button onclick="switchWorkspace('arabic', 'Arabic Workspace')" class="subject-btn active w-full text-right px-3 py-2.5 rounded-xl text-cyan-400 bg-cyan-500/10 flex items-center justify-between transition">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-book text-cyan-400"></i> Arabic</span>
-                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+        <!-- 1. RIGHT SIDEBAR: SUBJECTS SELECTOR (قسم المواد) -->
+        <aside class="col-span-12 md:col-span-3 lg:col-span-2 bg-[#1c2541]/90 border-l border-slate-800 p-3 flex flex-col justify-between overflow-y-auto">
+            <div class="space-y-3">
+                <div class="flex justify-between items-center px-2 pt-1">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">المواد الدراسية</span>
+                    <span id="active-subject-badge" class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded font-bold">العربية</span>
+                </div>
+
+                <nav id="subjects-list" class="space-y-1.5">
+                    <!-- Arabic -->
+                    <button onclick="selectSubject('arabic', 'اللغة العربية', 'fa-book', 'text-cyan-400')" class="subject-btn active w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-between border border-transparent bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-book text-cyan-400"></i> اللغة العربية</span>
+                        <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
                     </button>
-                    <button onclick="switchWorkspace('english', 'English & Speech Lab')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-language text-indigo-400"></i> English / IELTS</span>
-                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    <!-- English -->
+                    <button onclick="selectSubject('english', 'اللغة الإنجليزية & IELTS', 'fa-language', 'text-indigo-400')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800/80 transition flex items-center justify-between border border-transparent">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-language text-indigo-400"></i> الإنجليزية & IELTS</span>
+                        <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
                     </button>
-                    <button onclick="switchWorkspace('chemistry', 'Chemistry Workspace')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-flask text-emerald-400"></i> Chemistry</span>
-                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    <!-- Chemistry -->
+                    <button onclick="selectSubject('chemistry', 'الكيمياء', 'fa-flask', 'text-emerald-400')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800/80 transition flex items-center justify-between border border-transparent">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-flask text-emerald-400"></i> الكيمياء</span>
+                        <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
                     </button>
-                    <button onclick="switchWorkspace('physics', 'Physics Workspace')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-atom text-blue-400"></i> Physics</span>
-                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    <!-- Physics -->
+                    <button onclick="selectSubject('physics', 'الفيزياء', 'fa-atom', 'text-blue-400')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800/80 transition flex items-center justify-between border border-transparent">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-atom text-blue-400"></i> الفيزياء</span>
+                        <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
                     </button>
-                    <button onclick="switchWorkspace('math', 'Math Workspace')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-amber-400"></i> Math</span>
-                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    <!-- Math -->
+                    <button onclick="selectSubject('math', 'الرياضيات', 'fa-calculator', 'text-amber-400')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800/80 transition flex items-center justify-between border border-transparent">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-calculator text-amber-400"></i> الرياضيات</span>
+                        <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
                     </button>
-                    <button onclick="switchWorkspace('schedule', 'الجدول الأسبوعي والمهام')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 flex items-center justify-between transition">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-calendar-days text-purple-400"></i> Schedule & Tasks</span>
-                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    <!-- Biology -->
+                    <button onclick="selectSubject('biology', 'الأحياء', 'fa-dna', 'text-rose-400')" class="subject-btn w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800/80 transition flex items-center justify-between border border-transparent">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-dna text-rose-400"></i> الأحياء</span>
+                        <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
                     </button>
                 </nav>
             </div>
 
-            <button onclick="alert('قريباً: إضافة مواد مخصصة جديدة')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-xl text-xs font-bold border border-cyan-500/20 flex items-center justify-center gap-2 transition">
-                <i class="fa-solid fa-plus"></i> New Subject
-            </button>
+            <!-- Subject Vault Quick Stats -->
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-[11px] space-y-2 mt-4">
+                <div class="text-slate-400 font-semibold flex justify-between">
+                    <span>الملفات المحفوظة:</span>
+                    <span id="pdf-count" class="text-cyan-400 font-bold">0</span>
+                </div>
+                <div class="text-slate-400 font-semibold flex justify-between">
+                    <span>إجمالي الاختبارات:</span>
+                    <span id="quiz-count" class="text-emerald-400 font-bold">0</span>
+                </div>
+            </div>
         </aside>
 
-        <!-- 2. CENTRAL DYNAMIC WORKSPACE AREA -->
-        <main class="col-span-12 md:col-span-10 p-6 overflow-y-auto space-y-6">
+        <!-- 2. CENTER PANEL: MAIN EXAM & WORKSPACE CONTROL (التحكم في المادة والاختبار) -->
+        <main class="col-span-12 md:col-span-6 lg:col-span-7 p-4 overflow-y-auto space-y-4">
             
-            <!-- WORKSPACE HEADER TITLE -->
-            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h2 id="workspace-title" class="text-xl font-bold text-slate-100">Arabic Workspace</h2>
-                <span id="storage-status" class="text-xs text-slate-400">0 saved file(s) - storage synced</span>
+            <!-- CURRENT SUBJECT HEADER -->
+            <div class="bg-[#1c2541] border border-slate-800 rounded-2xl p-4 flex justify-between items-center shadow-md">
+                <div class="flex items-center gap-3">
+                    <div id="subject-icon-box" class="p-3 bg-cyan-500/10 rounded-xl text-cyan-400 border border-cyan-500/20 text-lg">
+                        <i id="current-subject-icon" class="fa-solid fa-book"></i>
+                    </div>
+                    <div>
+                        <h2 id="current-subject-title" class="text-base font-bold text-white">مساحة عمل: اللغة العربية</h2>
+                        <p class="text-xs text-slate-400">اختر إعدادات الاختبار أو رفع المذكرات الخاصة بالمادة</p>
+                    </div>
+                </div>
+                <button onclick="triggerPdfUpload()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-2 transition shadow-lg shadow-cyan-600/20">
+                    <i class="fa-solid fa-file-arrow-up"></i>
+                    <span>رفع PDF جديد</span>
+                </button>
+                <input type="file" id="pdf-input" accept=".pdf" class="hidden" onchange="handlePdfSelected(this)">
             </div>
 
-            <!-- DYNAMIC CONTENT CONTAINER -->
-            <div id="workspace-content" class="space-y-6">
-
-                <!-- DEFAULT VIEW: ACADEMIC SUBJECT WORKSPACE -->
-                <div class="grid grid-cols-12 gap-6">
-                    <!-- MATERIAL UPLOAD CARD -->
-                    <div class="col-span-12 lg:col-span-5 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Material</h3>
-                        <label class="border-2 border-dashed border-cyan-500/30 hover:border-cyan-500 bg-cyan-500/5 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition">
-                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-cyan-400 mb-2"></i>
-                            <span class="text-xs font-bold text-cyan-400">Upload PDF / Book</span>
-                            <input type="file" accept=".pdf" class="hidden" onchange="handleFileUpload(this)">
-                        </label>
-
-                        <!-- QUIZ SETUP -->
-                        <div class="space-y-3 pt-2">
-                            <h4 class="text-xs font-bold text-slate-300">Quiz Setup</h4>
-                            <div class="flex gap-2">
-                                <button class="flex-1 bg-cyan-600 text-white text-xs font-bold py-2 rounded-lg">Book Exercises Only</button>
-                                <button class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2 rounded-lg">AI Generated Quiz</button>
-                            </div>
-                            <div>
-                                <label class="text-[11px] text-slate-400">QUESTIONS COUNT</label>
-                                <div class="flex gap-2 mt-1">
-                                    <button class="px-3 py-1 bg-slate-800 text-xs rounded-md text-slate-300">5</button>
-                                    <button class="px-3 py-1 bg-cyan-500 text-xs rounded-md font-bold text-white">10</button>
-                                    <button class="px-3 py-1 bg-slate-800 text-xs rounded-md text-slate-300">20</button>
-                                    <button class="px-3 py-1 bg-slate-800 text-xs rounded-md text-slate-300">ALL</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- QUIZ / VAULT VIEW -->
-                    <div class="col-span-12 lg:col-span-7 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 flex flex-col justify-center items-center text-center space-y-3 min-h-[300px]">
-                        <div class="p-4 bg-slate-800/50 rounded-full text-slate-500">
-                            <i class="fa-solid fa-file-pdf text-3xl"></i>
-                        </div>
-                        <p class="text-xs text-slate-400">Upload a PDF, choose your mode and build a quiz to start.</p>
+            <!-- EXAM & QUIZ BUILDER PANEL (لوحة إعداد الاختبار) -->
+            <div class="bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-5 shadow-md">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-cyan-400"></i> إعدادات الاختبار والأسئلة (Quiz Setup)
+                    </h3>
+                    <!-- Language Switcher -->
+                    <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-[11px]">
+                        <span class="text-slate-400 px-1 font-semibold">لغة الأسئلة:</span>
+                        <button id="lang-ar" onclick="setExamLanguage('ar')" class="px-2 py-0.5 rounded bg-cyan-500 text-white font-bold">عربي</button>
+                        <button id="lang-en" onclick="setExamLanguage('en')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white font-semibold">English</button>
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Question Source Option -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-300 block">مصدر الأسئلة:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="src-book" onclick="setQuestionSource('book')" class="py-2.5 px-3 rounded-xl border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold text-center transition">
+                                أسئلة الكتاب فقط
+                            </button>
+                            <button id="src-ai" onclick="setQuestionSource('ai')" class="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-400 hover:text-slate-200 text-xs font-semibold text-center transition">
+                                توليد ذكي بالـ AI
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Questions Count -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-300 block">عدد الأسئلة المطلوب:</label>
+                        <div class="flex gap-2">
+                            <button onclick="setQuestionsCount(10, this)" class="count-btn flex-1 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 font-bold hover:border-cyan-500 transition">10</button>
+                            <button onclick="setQuestionsCount(20, this)" class="count-btn flex-1 py-2 rounded-xl bg-cyan-500 text-white font-bold text-xs shadow-md shadow-cyan-500/20 border border-cyan-400">20</button>
+                            <button onclick="setQuestionsCount(30, this)" class="count-btn flex-1 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 font-bold hover:border-cyan-500 transition">30</button>
+                            <button onclick="setQuestionsCount('ALL', this)" class="count-btn flex-1 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 font-bold hover:border-cyan-500 transition">الكل</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MAIN BUILD & FLASHCARD BUTTONS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <button onclick="generateQuiz()" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition">
+                        <i class="fa-solid fa-play text-sm"></i>
+                        <span>إنشاء وتوليد الاختبار (Build Quiz)</span>
+                    </button>
+                    <button onclick="openFlashcards()" class="bg-slate-800 hover:bg-slate-700 text-purple-300 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 border border-purple-500/30 transition">
+                        <i class="fa-solid fa-clone text-purple-400"></i>
+                        <span>مراجعة البطاقات الذكية (Flashcards)</span>
+                    </button>
+                </div>
             </div>
+
+            <!-- EXAM & ERROR VAULT DISPLAY WORKSPACE (شاشة عرض الاختبار والغلطات) -->
+            <div class="bg-[#1c2541] border border-slate-800 rounded-2xl p-5 min-h-[260px] flex flex-col justify-center items-center text-center relative shadow-md">
+                
+                <!-- Sub Tabs (Quiz View vs Error Vault) -->
+                <div class="absolute top-4 right-4 flex gap-2">
+                    <button id="view-tab-quiz" onclick="switchMainView('quiz')" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-800 text-cyan-400 border border-cyan-500/30">
+                        شاشة الاختبار
+                    </button>
+                    <button id="view-tab-errors" onclick="switchMainView('errors')" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 hover:text-red-400">
+                        بنك الأخطاء والاحتياط <span id="error-badge" class="bg-red-500/20 text-red-400 px-1.5 py-0.2 rounded text-[10px] ml-1">0</span>
+                    </button>
+                </div>
+
+                <!-- Default Empty State Content -->
+                <div id="quiz-workspace-content" class="space-y-3 py-8">
+                    <div class="p-4 bg-slate-900/60 rounded-full text-slate-600 inline-block border border-slate-800">
+                        <i class="fa-solid fa-file-circle-question text-3xl"></i>
+                    </div>
+                    <h4 class="text-sm font-bold text-slate-300">لم يتم بدء اختبار بعد</h4>
+                    <p class="text-xs text-slate-400 max-w-sm">قم برفع ملف PDF الخاص بالمادة، ثم حدد عدد الأسئلة واضغط على "إنشاء وتوليد الاختبار" للبدء فوراً.</p>
+                </div>
+            </div>
+
         </main>
+
+        <!-- 3. LEFT SIDEBAR: SCHEDULE & TASKS (الجدول الأسبوعي والمهام) -->
+        <aside class="col-span-12 md:col-span-3 lg:col-span-3 bg-[#1c2541]/90 border-r border-slate-800 p-4 flex flex-col justify-between overflow-y-auto">
+            <div class="space-y-4">
+                <!-- Header -->
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days"></i> الجدول الأسبوعي والمهام
+                    </h3>
+                    <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded font-bold">اليوم</span>
+                </div>
+
+                <!-- Task Input -->
+                <div class="flex gap-2">
+                    <input type="text" id="task-input" placeholder="إضافة مراجعة أو درس جديد..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500">
+                    <button onclick="addTask()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-2 rounded-xl text-xs transition">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+
+                <!-- Tasks List -->
+                <div id="tasks-list" class="space-y-2">
+                    <div class="p-2.5 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" class="accent-purple-500 rounded cursor-pointer">
+                            <span class="text-slate-300 font-medium">مراجعة نصوص اللغة العربية</span>
+                        </div>
+                        <span class="text-[10px] text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">عربي</span>
+                    </div>
+                    <div class="p-2.5 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" class="accent-purple-500 rounded cursor-pointer">
+                            <span class="text-slate-300 font-medium">حل 20 سؤال كيمياء كهربية</span>
+                        </div>
+                        <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">كيمياء</span>
+                    </div>
+                </div>
+
+                <!-- Weekly Schedule Quick Grid -->
+                <div class="pt-2 border-t border-slate-800 space-y-2">
+                    <span class="text-[11px] font-bold text-slate-400 block">خطة الأسبوع:</span>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold">
+                        <div class="bg-slate-900 p-1.5 rounded text-slate-400">سبت</div>
+                        <div class="bg-slate-900 p-1.5 rounded text-slate-400">أحد</div>
+                        <div class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 p-1.5 rounded">إثن</div>
+                        <div class="bg-slate-900 p-1.5 rounded text-slate-400">ثلا</div>
+                        <div class="bg-slate-900 p-1.5 rounded text-slate-400">أرب</div>
+                        <div class="bg-slate-900 p-1.5 rounded text-slate-400">خميس</div>
+                        <div class="bg-slate-900 p-1.5 rounded text-slate-400">جمعة</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motivational Quote Card -->
+            <div class="bg-gradient-to-br from-slate-900 to-[#1c2541] p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400 space-y-1 mt-4">
+                <i class="fa-solid fa-quote-right text-purple-400 text-xs"></i>
+                <p class="italic text-slate-300">"النجاح هو مجموع المحاولات الصغيرة المكررة يوماً بعد يوم."</p>
+            </div>
+        </aside>
+
     </div>
 
-    <!-- AI TUTOR MODAL -->
-    <div id="ai-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+    <!-- ================= AI TUTOR MODAL ================= -->
+    <div id="ai-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#1c2541] border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[550px]">
-            <div class="p-4 bg-slate-800/80 border-b border-slate-700 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
-                    <h3 class="font-bold text-sm text-slate-100">AI Tutor Assistant</h3>
+            <!-- Modal Header -->
+            <div class="p-4 bg-slate-900/80 border-b border-slate-700 flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-1.5 bg-amber-500/20 text-amber-400 rounded-lg">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xs text-slate-100">المساعد الذكي (AI Tutor Assistant)</h3>
+                        <p class="text-[10px] text-slate-400">مستشارك الخاص للشرح والإجابة عن الأسئلة الصعبة</p>
+                    </div>
                 </div>
-                <button onclick="toggleAiModal()" class="text-slate-400 hover:text-white font-bold text-lg">×</button>
+                <button onclick="toggleAiModal()" class="text-slate-400 hover:text-white font-bold text-lg px-2">✕</button>
             </div>
+
+            <!-- Chat History Area -->
             <div id="ai-chat-body" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
-                <div class="bg-cyan-500/10 border border-cyan-500/20 text-slate-200 p-3 rounded-xl max-w-[85%]">
-                    أهلاً بك! أنا معلمك الذكي الخاص بـ AthenaEum. اسألني في أي مادة، شرح نقطة معقدة، أو توليد أسئلة فورية!
+                <div class="bg-cyan-500/10 border border-cyan-500/20 text-slate-200 p-3 rounded-xl max-w-[85%] leading-relaxed">
+                    أهلاً بك! أنا معلمك الذكي لمادة <b id="ai-subject-name" class="text-cyan-400">اللغة العربية</b>. اسألني في أي قاعدة، شرح نقطة معقدة، أو أطلب مني توضيح إجابة سؤال!
                 </div>
             </div>
+
+            <!-- Chat Input -->
             <div class="p-3 border-t border-slate-700 bg-slate-900/50 flex gap-2">
-                <input type="text" id="ai-input" onkeypress="if(event.key==='Enter') sendAiMessage()" placeholder="اكتب سؤالك هنا..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                <input type="text" id="ai-input" onkeypress="if(event.key==='Enter') sendAiMessage()" placeholder="اكتب سؤالك هنا لمساعدتك..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
                 <button onclick="sendAiMessage()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition">إرسال</button>
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT ARCHITECTURE -->
+    <!-- ================= JAVASCRIPT LOGIC & STATE MANAGEMENT ================= -->
     <script>
-        function toggleAiModal() {
-            document.getElementById('ai-modal').classList.toggle('hidden');
+        // Global App State
+        let currentSubject = 'arabic';
+        let currentSubjectName = 'اللغة العربية';
+        let examLanguage = 'ar';
+        let questionSource = 'book';
+        let selectedQuestionsCount = 20;
+
+        // Select Subject Function
+        function selectSubject(id, name, icon, colorClass) {
+            currentSubject = id;
+            currentSubjectName = name;
+
+            // Update UI Sidebar Buttons
+            document.querySelectorAll('.subject-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-cyan-500/10', 'text-cyan-400', 'border-cyan-500/30');
+                btn.classList.add('text-slate-300', 'border-transparent');
+            });
+            event.currentTarget.classList.add('active', 'bg-cyan-500/10', 'text-cyan-400', 'border-cyan-500/30');
+
+            // Update Main View Title & Icons
+            document.getElementById('current-subject-title').innerText = `مساحة عمل: ${name}`;
+            document.getElementById('active-subject-badge').innerText = name;
+            document.getElementById('ai-subject-name').innerText = name;
+
+            const iconBox = document.getElementById('subject-icon-box');
+            iconBox.className = `p-3 bg-slate-900 rounded-xl ${colorClass} border border-slate-800 text-lg`;
+            document.getElementById('current-subject-icon').className = `fa-solid ${icon}`;
         }
 
-        function switchWorkspace(type, title) {
-            document.getElementById('workspace-title').innerText = title;
-            const content = document.getElementById('workspace-content');
-
-            document.querySelectorAll('.subject-btn').forEach(btn => {
-                btn.classList.remove('active', 'text-cyan-400', 'bg-cyan-500/10');
-                btn.classList.add('text-slate-300');
-            });
-            event.currentTarget.classList.add('active', 'text-cyan-400', 'bg-cyan-500/10');
-
-            if(type === 'english') {
-                content.innerHTML = `
-                    <div class="grid grid-cols-12 gap-6">
-                        <div class="col-span-12 lg:col-span-6 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
-                            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-                                <i class="fa-solid fa-microphone"></i> Universal Speech & Audio Lab
-                            </h3>
-                            <p class="text-xs text-slate-400">اختبر مهارات التحدث والنطق مع الذكاء الاصطناعي (IELTS Part 1-3, General Conversation, or Accent Training).</p>
-                            
-                            <div class="space-y-2">
-                                <label class="text-[11px] text-slate-300 font-bold">Select Training Mode:</label>
-                                <select class="w-full bg-slate-900 border border-slate-700 text-xs rounded-xl p-2.5 text-slate-200">
-                                    <option>IELTS Speaking Simulation (Part 1, 2, 3)</option>
-                                    <option>General Daily Conversation</option>
-                                    <option>Pronunciation & Accent Analysis</option>
-                                    <option>Listening & Dictation Practice</option>
-                                </select>
-                            </div>
-
-                            <button onclick="alert('جاري تشغيل الميكروفون للتحليل الصوتي...')" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition">
-                                <i class="fa-solid fa-circle-dot text-red-400 animate-pulse"></i> Start Audio Practice
-                            </button>
-                        </div>
-
-                        <div class="col-span-12 lg:col-span-6 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase">Flashcards & Spaced Repetition</h3>
-                            <div class="border border-slate-700 rounded-xl p-6 text-center space-y-2 bg-slate-900/40">
-                                <span class="text-xs text-cyan-400 font-mono">Vocabulary Item</span>
-                                <h4 class="text-lg font-bold text-white">Pragmatic</h4>
-                                <p class="text-xs text-slate-400">Dealing with things sensibly and realistically.</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if(type === 'schedule') {
-                content.innerHTML = `
-                    <div class="bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
-                        <h3 class="text-xs font-bold text-purple-400 uppercase">الجدول الأسبوعي</h3>
-                        <p class="text-xs text-slate-400">جدول منظم ومستقل بدون أي دوشة.</p>
-                    </div>
-                `;
+        // Exam Settings Controls
+        function setExamLanguage(lang) {
+            examLanguage = lang;
+            if(lang === 'ar') {
+                document.getElementById('lang-ar').className = "px-2 py-0.5 rounded bg-cyan-500 text-white font-bold";
+                document.getElementById('lang-en').className = "px-2 py-0.5 rounded text-slate-400 hover:text-white font-semibold";
             } else {
-                content.innerHTML = `
-                    <div class="grid grid-cols-12 gap-6">
-                        <div class="col-span-12 lg:col-span-5 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 space-y-4">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Material</h3>
-                            <label class="border-2 border-dashed border-cyan-500/30 hover:border-cyan-500 bg-cyan-500/5 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition">
-                                <i class="fa-solid fa-cloud-arrow-up text-2xl text-cyan-400 mb-2"></i>
-                                <span class="text-xs font-bold text-cyan-400">Upload PDF / Book</span>
-                                <input type="file" accept=".pdf" class="hidden" onchange="handleFileUpload(this)">
-                            </label>
-                        </div>
-                        <div class="col-span-12 lg:col-span-7 bg-[#1c2541] border border-slate-800 rounded-2xl p-5 flex flex-col justify-center items-center text-center space-y-3 min-h-[300px]">
-                            <i class="fa-solid fa-book-open text-3xl text-slate-600"></i>
-                            <p class="text-xs text-slate-400">مساحة عمل خاصة بـ ${title}</p>
-                        </div>
-                    </div>
-                `;
+                document.getElementById('lang-en').className = "px-2 py-0.5 rounded bg-cyan-500 text-white font-bold";
+                document.getElementById('lang-ar').className = "px-2 py-0.5 rounded text-slate-400 hover:text-white font-semibold";
             }
+        }
+
+        function setQuestionSource(src) {
+            questionSource = src;
+            if(src === 'book') {
+                document.getElementById('src-book').className = "py-2.5 px-3 rounded-xl border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold text-center transition";
+                document.getElementById('src-ai').className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-400 hover:text-slate-200 text-xs font-semibold text-center transition";
+            } else {
+                document.getElementById('src-ai').className = "py-2.5 px-3 rounded-xl border border-cyan-500 bg-cyan-500/10 text-cyan-400 text-xs font-bold text-center transition";
+                document.getElementById('src-book').className = "py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-900/50 text-slate-400 hover:text-slate-200 text-xs font-semibold text-center transition";
+            }
+        }
+
+        function setQuestionsCount(count, btnElement) {
+            selectedQuestionsCount = count;
+            document.querySelectorAll('.count-btn').forEach(btn => {
+                btn.className = "count-btn flex-1 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-300 font-bold hover:border-cyan-500 transition";
+            });
+            btnElement.className = "count-btn flex-1 py-2 rounded-xl bg-cyan-500 text-white font-bold text-xs shadow-md shadow-cyan-500/20 border border-cyan-400";
+        }
+
+        // PDF Trigger & Upload
+        function triggerPdfUpload() {
+            document.getElementById('pdf-input').click();
+        }
+
+        function handlePdfSelected(input) {
+            if(input.files && input.files[0]) {
+                const fileName = input.files[0].name;
+                document.getElementById('pdf-count').innerText = "1";
+                alert(`تم رفع الملف "${fileName}" بنجاح وتجهيزه لمادة ${currentSubjectName}!`);
+            }
+        }
+
+        // Quiz Generator & UI Switcher
+        function generateQuiz() {
+            const workspace = document.getElementById('quiz-workspace-content');
+            workspace.className = "text-right w-full space-y-4";
+            workspace.innerHTML = `
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <span class="text-xs font-bold text-cyan-400">سؤال 1 من ${selectedQuestionsCount}</span>
+                    <span class="text-[11px] text-slate-400 font-semibold">اللغة: ${examLanguage === 'ar' ? 'العربية' : 'English'}</span>
+                </div>
+                <h4 class="text-sm font-bold text-slate-100 leading-relaxed">
+                    ${examLanguage === 'ar' ? 'ما هو الإعراب الصحيح للكلمة المخطوط تحتها في السياق المذكور داخل كتاب المادة؟' : 'What is the correct definition or rule regarding this core chapter concept?'}
+                </h4>
+                <div class="space-y-2 pt-2">
+                    <button onclick="answerQuiz(true)" class="w-full text-right p-3 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition">أ) الاختيار الأول المحتمل</button>
+                    <button onclick="answerQuiz(false)" class="w-full text-right p-3 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition">ب) الاختيار الثاني المحتمل</button>
+                    <button onclick="answerQuiz(false)" class="w-full text-right p-3 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/50 rounded-xl text-xs text-slate-300 transition">ج) الاختيار الثالث المحتمل</button>
+                </div>
+            `;
+        }
+
+        function answerQuiz(isCorrect) {
+            if(isCorrect) {
+                alert('إجابة صحيحة! أحسنت 👏');
+            } else {
+                alert('إجابة خاطئة! تم إضافة السؤال لبنك الأخطاء لمراجعته لاحقاً.');
+                const badge = document.getElementById('error-badge');
+                badge.innerText = parseInt(badge.innerText) + 1;
+            }
+        }
+
+        function openFlashcards() {
+            alert(`جاري تحميل البطاقات الذكية (Flashcards) لمادة ${currentSubjectName}...`);
+        }
+
+        function switchMainView(tab) {
+            if(tab === 'quiz') {
+                document.getElementById('view-tab-quiz').className = "px-3 py-1 rounded-lg text-xs font-bold bg-slate-800 text-cyan-400 border border-cyan-500/30";
+                document.getElementById('view-tab-errors').className = "px-3 py-1 rounded-lg text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 hover:text-red-400";
+            } else {
+                document.getElementById('view-tab-errors').className = "px-3 py-1 rounded-lg text-xs font-bold bg-slate-800 text-red-400 border border-red-500/30";
+                document.getElementById('view-tab-quiz').className = "px-3 py-1 rounded-lg text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 hover:text-cyan-400";
+            }
+        }
+
+        // Tasks & AI Modals
+        function addTask() {
+            const input = document.getElementById('task-input');
+            if(!input.value.trim()) return;
+
+            const list = document.getElementById('tasks-list');
+            const newTask = document.createElement('div');
+            newTask.className = "p-2.5 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between text-xs";
+            newTask.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" class="accent-purple-500 rounded cursor-pointer">
+                    <span class="text-slate-300 font-medium">${input.value}</span>
+                </div>
+                <span class="text-[10px] text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">عام</span>
+            `;
+            list.prepend(newTask);
+            input.value = "";
+        }
+
+        function toggleAiModal() {
+            document.getElementById('ai-modal').classList.toggle('hidden');
         }
 
         function sendAiMessage() {
@@ -257,20 +491,21 @@
             chatBody.scrollTop = chatBody.scrollHeight;
 
             setTimeout(() => {
-                chatBody.innerHTML += `<div class="bg-amber-500/10 border border-amber-500/20 text-slate-200 p-3 rounded-xl max-w-[85%]"><b class="text-amber-400">AI Tutor:</b> إجابة ممتازة، تم تحليل سؤالك المتعلق بـ "${text}" بنجاح!</div>`;
+                chatBody.innerHTML += `<div class="bg-amber-500/10 border border-amber-500/20 text-slate-200 p-3 rounded-xl max-w-[85%]"><b class="text-amber-400">AI Tutor:</b> بخصوص سؤالك في مادة (${currentSubjectName}): الإجابة النموذجية تعتمد على فهم القاعدة الأساسية وتطبيقها خطوة بخطوة.</div>`;
                 chatBody.scrollTop = chatBody.scrollHeight;
-            }, 600);
+            }, 500);
         }
 
-        function handleFileUpload(input) {
-            if(input.files && input.files[0]) {
-                document.getElementById('storage-status').innerText = `1 saved file (${input.files[0].name}) - synced`;
+        function openLanguageLab(mode) {
+            alert(`جاري فتح مختبر ${mode === 'speaking' ? 'المحادثة والتحدث الصوتي (Speaking Lab)' : 'الاستماع والإملاء (Listening Lab)'}...`);
+        }
+
+        function clearAllData() {
+            if(confirm('هل أنت تأكد من مسح جميع الملفات والمهام المخزنة؟')) {
+                location.reload();
             }
-        }
-
-        function clearWorkspace() {
-            document.getElementById('storage-status').innerText = `0 saved file(s) - storage synced`;
         }
     </script>
 </body>
 </html>
+```
